@@ -2,7 +2,7 @@
 
 NPM: `npm install pg`
 
-## Installaction
+## Installation
 
 ```
 brew install postgresql@17
@@ -39,3 +39,21 @@ Check that everything was setup with:
 ```
 
 [`README.md`](../../README.md)
+
+## Migrations
+
+Creating the tables:
+
+`api/migrations/001_initial.sql`
+
+Run the migration: `psql "$(grep '^DATABASE_URL=' .env | cut -d '=' -f2-)" -f migrations/001_initial.sql`
+
+⚠️ Temporary step: Manually creating a user. This won't be necessary once a sign-up feature is built ⚠️
+
+Insert the first user and get their id:
+
+```
+INSERT INTO users (name)
+VALUES ('yourname')
+RETURNING id;
+```

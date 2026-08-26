@@ -101,3 +101,29 @@ Updated package.json:
 }
 
 ```
+
+## Test POST endpoint
+
+````curl -X POST http://localhost:3949/posts \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Test post","body_html":"<p>Hello world</p>"}'
+{"id":1,"user_id":1,"title":"Test post","body_html":"<p>Hello world</p>","created_at":"2026-08-26T06:05:11.590Z"}%   ```
+
+````
+
+Check in psql:
+`SELECT \* FROM posts;`
+
+Should give:
+
+````
+blogsplitter=# select * from posts;
+ id | user_id |   title   |     body_html      |          created_at
+----+---------+-----------+--------------------+-------------------------------
+  1 |       1 | Test post | <p>Hello world</p> | 2026-08-25 23:05:11.590908-07
+(1 row)```
+````
+
+Fetch:
+
+`@curl http://localhost:3949/posts`
