@@ -25,11 +25,15 @@ Next.js, Express, PostgreSQL, and AWS S3.
 
 ## Installation
 
-Install dependencies separately in `/frontend` and `/api`.
+Install dependencies separately in `/frontend` and `/api` with `npm install`.
 
-## Usage
+PostgreSQL setup instructions are available in [`docs/setup/Postgres.md`](docs/setup/Postgres.md).
+
+## Usage 🏃‍♂️‍➡️
 
 Run the frontend and API locally, then create and retrieve posts through the app.
+
+From the root folder you can run `npm run dev` to start both servers.
 
 ## Configuration 🔧
 

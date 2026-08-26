@@ -1,5 +1,8 @@
-Next.js Initialization Log
---------------------------
+⚠️ NO ACTUAL SETUP STEPS TO FOLLOW HERE. THIS IS WHAT WAS DONE ⚠️
+
+# Next.js
+
+## Next.js Initialization Log
 
 npx create-next-app@latest .
 Need to install the following packages:
@@ -14,21 +17,22 @@ Ok to proceed? (y) y
 ✔ Would you like your code inside a `src/` directory? … No / Yes
 ✔ Would you like to use App Router? (recommended) … No / Yes
 ✔ Would you like to customize the import alias (`@/*` by default)? … No / Yes
-✔ What import alias would you like configured? … @/*
+✔ What import alias would you like configured? … @/\*
 ✔ Would you like to include AGENTS.md to guide coding agents to write up-to-date Next.js code? … No / Yes
 Creating a new Next.js app in /Users/<me>/blogsplitter/frontend.
 
 Using npm.
 
-Initializing project with template: app 
-
+Initializing project with template: app
 
 Installing dependencies:
+
 - next
 - react
 - react-dom
 
 Installing devDependencies:
+
 - @types/node
 - @types/react
 - @types/react-dom
@@ -38,16 +42,16 @@ Installing devDependencies:
 - typescript
 
 npm warn EBADENGINE Unsupported engine {
-npm warn EBADENGINE   package: 'eslint-visitor-keys@5.0.1',
-npm warn EBADENGINE   required: { node: '^20.19.0 || ^22.13.0 || >=24' },
-npm warn EBADENGINE   current: { node: 'v23.6.0', npm: '10.9.2' }
+npm warn EBADENGINE package: 'eslint-visitor-keys@5.0.1',
+npm warn EBADENGINE required: { node: '^20.19.0 || ^22.13.0 || >=24' },
+npm warn EBADENGINE current: { node: 'v23.6.0', npm: '10.9.2' }
 npm warn EBADENGINE }
 npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
 
 added 348 packages, and audited 349 packages in 11s
 
 142 packages are looking for funding
-  run `npm fund` for details
+run `npm fund` for details
 
 found 0 vulnerabilities
 
@@ -55,3 +59,45 @@ Generating route types...
 ✓ Types generated successfully
 
 Success! Created frontend at /Users/<me>/blogsplitter/frontend
+
+# TypeScript
+
+Postgres types:
+npm install -D @types/pg
+npm install -D @types/express
+
+created `tsconfig.json` in `/api`:
+
+```
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}
+```
+
+Updated package.json:
+
+```
+{
+  ...
+  "scripts": {
+    "dev": "tsx src/server.ts"
+  },
+  ...
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^24.0.0",
+    "@types/pg": "^8.23.1",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  }
+}
+
+```
