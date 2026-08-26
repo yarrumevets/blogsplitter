@@ -57,3 +57,21 @@ INSERT INTO users (name)
 VALUES ('yourname')
 RETURNING id;
 ```
+
+## Create blogs manually
+
+blog name , url-friendly slug , tags
+
+```
+INSERT INTO blogs (name, slug, required_tags)
+VALUES
+  ('3d Printing Blog', '3dprint', ARRAY['3dprint', '3dprinting']),
+  ('Motor Bikes Blog', 'moto', ARRAY['moto', 'motorcycle', 'scooter']);
+```
+
+Query them after adding some posts that have matching tags:
+
+```
+curl http://localhost:3949/blogs/3dprint/posts
+curl http://localhost:3949/blogs/moto/posts
+```
