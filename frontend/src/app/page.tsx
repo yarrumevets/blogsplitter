@@ -10,6 +10,25 @@ type Post = {
 async function createPost(formData: FormData) {
   "use server";
 
+  let bodyHtml = String(formData.get("body_html") ?? "");
+  const image = formData.get("image");
+  if (image instanceof File && image.size > 0) {
+    const uploadData = new FormData();
+    uploadData.append("image", image);
+
+    const uploadResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/uploads`,
+      {
+        method: "POST",
+        body: uploadData,
+      },
+    );
+
+    const { url } = await uploadResponse.json();
+
+    bodyHtml += `<p><img src="${url}" alt=""></p>`;
+  }
+
   await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts`, {
     method: "POST",
     headers: {
@@ -17,7 +36,7 @@ async function createPost(formData: FormData) {
     },
     body: JSON.stringify({
       title: String(formData.get("title") ?? ""),
-      body_html: String(formData.get("body_html") ?? ""),
+      body_html: bodyHtml,
     }),
   });
 
@@ -36,6 +55,7 @@ export default async function Home() {
       <form action={createPost}>
         <input name="title" placeholder="Title" required />
         <textarea name="body_html" placeholder="Post body" required />
+        <input type="file" name="image" accept="image/*" />
         <button type="submit">Create post</button>
       </form>
 

@@ -1,6 +1,7 @@
 import express from "express";
 import "dotenv/config";
 import { Pool } from "pg";
+import uploadsRouter from "./routes/uploads.js";
 
 const PORT = Number(process.env.PORT);
 const NODE_ENV = process.env.NODE_ENV;
@@ -46,6 +47,9 @@ app.get("/posts", async (_req, res) => {
   const result = await db.query("SELECT * FROM posts ORDER BY created_at DESC");
   res.json(result.rows);
 });
+
+// Routes
+app.use("/uploads", uploadsRouter);
 
 app.use(express.static("public"));
 

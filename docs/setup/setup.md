@@ -127,3 +127,65 @@ blogsplitter=# select * from posts;
 Fetch:
 
 `@curl http://localhost:3949/posts`
+
+## 🪣 S3
+
+npm install @aws-sdk/client-s3 multer
+npm install -D @types/multer
+
+created `src/s3.ts` and `src/routes/uploads.ts`
+
+### Create S3 bucket:
+
+- create bucket with defaults
+- create IAM user with: programmatic access
+- create access key under Security Credentials
+- Attach policy: JSON:
+
+```
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME/*"
+    }
+  ]
+}
+```
+
+- 🔄 Refresh policies in the user page and select.
+- Create user!
+- Add the `access key` and `secret access key` to `api/.env`
+
+- Bucket - block public access - edit - uncheck all - save
+- Bucket - policies - edit:
+
+```
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME/*"
+    }
+  ]
+}
+```
+
+### Test upload route:
+
+```
+`curl -X POST http://localhost:3949/uploads \
+ -F "image=@/full/path/to/test-image.jpg"
+```
+
+curl -X POST http://localhost:3949/uploads \
+ -F "image=@/Users/steve/projects/blogsplitter/api/public/images/logo.svg"
