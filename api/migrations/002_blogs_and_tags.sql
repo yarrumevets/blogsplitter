@@ -1,0 +1,10 @@
+ALTER TABLE posts
+ADD COLUMN tags TEXT[] NOT NULL DEFAULT '{}';
+
+CREATE TABLE blogs (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  required_tags TEXT[] NOT NULL DEFAULT '{}',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
