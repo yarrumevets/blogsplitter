@@ -1,7 +1,18 @@
+// @TODO: Handle duplicate post titles by generating unique slugs.
+// @TODO: Handle titles that generate an empty slug.
+
 import { Router } from "express";
 import db from "../db";
 
 const router = Router();
+
+function createSlug(title: string) {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
 
 router.post("/", async (req, res) => {
   const { title, body_html } = req.body;
@@ -11,14 +22,17 @@ router.post("/", async (req, res) => {
     });
   }
   try {
+    const slug = createSlug(title);
+
     const result = await db.query(
-      `INSERT INTO posts (user_id, title, body_html)
-      VALUES ($1, $2, $3)
-      RETURNING *`,
-      [1, title, body_html], // @TODO: Replace with dynamic user, instead of '1'.
+      `INSERT INTO posts (user_id, title, slug, body_html)
+   VALUES ($1, $2, $3, $4)
+   RETURNING *`,
+      [1, title, slug, body_html],
     );
 
     // Add tags to the tags table and post_tags
+
     const tags: string[] = req.body.tags ?? [];
     for (const name of tags) {
       const tagResult = await db.query(
