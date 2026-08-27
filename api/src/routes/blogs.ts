@@ -3,10 +3,17 @@ import db from "../db.js";
 
 const router = Router();
 
-router.get("/:slug/posts", async (req, res) => {
-  const blogResult = await db.query("SELECT * FROM blogs WHERE slug = $1", [
-    req.params.slug,
-  ]);
+router.get("/:user/:slug/posts", async (req, res) => {
+  const blogResult = await db.query(
+    `
+  SELECT blogs.*
+  FROM blogs
+  JOIN users ON users.id = blogs.user_id
+  WHERE users.name = $1
+    AND blogs.slug = $2
+  `,
+    [req.params.user, req.params.slug],
+  );
 
   if (blogResult.rowCount === 0) {
     return res.status(404).json({ error: "Blog not found" });
@@ -49,15 +56,22 @@ router.get("/:slug/posts", async (req, res) => {
   });
 });
 
+// Get list of blogs.
 router.get("/", async (_req, res) => {
-  const result = await db.query(
-    "SELECT id, name, slug, required_tags FROM blogs ORDER BY name",
-  );
+  const result = await db.query(`
+    SELECT
+      blogs.id,
+      blogs.name,
+      blogs.slug,
+      blogs.required_tags,
+      users.name AS user
+    FROM blogs
+    JOIN users ON users.id = blogs.user_id
+    ORDER BY blogs.name
+  `);
 
   res.json(result.rows);
 });
-
-export default router;
 
 // Load post in context of a particular blog and verify it belongs to that blog's query.
 router.get("/:user/:blog/:post", async (req, res) => {
@@ -95,3 +109,5 @@ router.get("/:user/:blog/:post", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch post" });
   }
 });
+
+export default router;

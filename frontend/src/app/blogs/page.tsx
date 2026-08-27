@@ -2,6 +2,7 @@ type Blog = {
   id: number;
   name: string;
   slug: string;
+  user: string;
 };
 
 export default async function BlogsPage() {
@@ -15,7 +16,7 @@ export default async function BlogsPage() {
     <main>
       {blogs.map((blog) => (
         <p key={blog.id}>
-          <a href={`/blogs/${blog.slug}`}>{blog.name}</a>
+          <a href={`/blogs/${blog.user}/${blog.slug}`}>{blog.name}</a>
         </p>
       ))}
     </main>

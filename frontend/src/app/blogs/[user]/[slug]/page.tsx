@@ -3,6 +3,7 @@ type Post = {
   title: string;
   body_html: string;
   tags: string[];
+  slug: string;
 };
 
 type Blog = {
@@ -15,12 +16,12 @@ type Blog = {
 export default async function BlogPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ user: string; slug: string }>;
 }) {
-  const { slug } = await params;
+  const { user, slug } = await params;
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/blogs/${slug}/posts`,
+    `${process.env.NEXT_PUBLIC_API_URL}/blogs/${user}/${slug}/posts`,
     { cache: "no-store" },
   );
 
@@ -32,7 +33,9 @@ export default async function BlogPage({
 
       {posts.map((post) => (
         <article key={post.id}>
-          <h2>{post.title}</h2>
+          <h2>
+            <a href={`/blogs/${user}/${slug}/${post.slug}`}>{post.title}</a>
+          </h2>
           <div dangerouslySetInnerHTML={{ __html: post.body_html }} />
           <small>{post.tags.join(", ")}</small>
         </article>
