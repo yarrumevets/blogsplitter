@@ -79,4 +79,32 @@ router.get("/", async (_req, res) => {
   }
 });
 
+// Just load the post without context of any blog. (Intended only for special use cases)
+router.get("/:user/:post", async (req, res) => {
+  const { user, post } = req.params;
+
+  try {
+    const result = await db.query(
+      `
+      SELECT posts.*
+      FROM posts
+      JOIN users ON users.id = posts.user_id
+      WHERE users.name = $1
+        AND posts.slug = $2
+      LIMIT 1
+      `,
+      [user, post],
+    );
+
+    if (!result.rows[0]) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch post" });
+  }
+});
+
 export default router;
