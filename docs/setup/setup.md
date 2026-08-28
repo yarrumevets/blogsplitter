@@ -189,3 +189,34 @@ created `src/s3.ts` and `src/routes/uploads.ts`
 
 curl -X POST http://localhost:3949/uploads \
  -F "image=@/Users/steve/projects/blogsplitter/api/public/images/logo.svg"
+
+## EC2 Deployment
+
+For this project, I was deploying manually to an EC2 instance. I've included most of the steps as they might be useful:
+
+### Clone the Repo
+
+```
+git clone https://github.com/yarrumevets/blogsplitter.git
+cd blogsplitter
+```
+
+### Dependencies
+
+```
+npm install
+npm --prefix api install
+npm --prefix frontend install
+```
+
+### PostgreSQL
+
+(See [postgres.md](./postgres.md) for postgres installation on EC2 )
+
+### API .env
+
+create the api/.env
+
+`nano api/.env`
+
+paste in the contents [.env](../../api/.env) you use locally or from [.env.example](../../api/.env.example) but make sure to change 'development' to 'production'
