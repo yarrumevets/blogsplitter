@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "dist",
+    "rootDir": "src",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}
+
+// Description:
+/*
+target: JavaScript version to compile to.
+module: Module format Node should use.
+moduleResolution: How TypeScript resolves imports.
+outDir: Where compiled JS goes.
+rootDir: Where source TS lives.
+esModuleInterop: Allows default imports from CommonJS packages.
+strict: Enables stricter type checking.
+skipLibCheck: Skips type-checking dependency .d.ts files.
+include: Limits compilation to src.
+*/
