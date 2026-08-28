@@ -220,3 +220,7 @@ create the api/.env
 `nano api/.env`
 
 paste in the contents [.env](../../api/.env) you use locally or from [.env.example](../../api/.env.example) but make sure to change 'development' to 'production'
+
+### Build
+
+`npm run build`

@@ -2,7 +2,7 @@
 // @TODO: Handle titles that generate an empty slug.
 
 import { Router } from "express";
-import db from "../db";
+import db from "../db.js";
 
 const router = Router();
 
