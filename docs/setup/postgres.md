@@ -1,10 +1,16 @@
-# Postgres
+# PostgreSQL Setup Notes
 
-NPM: `npm install pg`
+> ⚠️ **These are project setup notes, not universal PostgreSQL instructions.**
 
-## Installation
+# Node Dependency
 
+```bash
+npm install pg
 ```
+
+# Local Installation (macOS)
+
+```bash
 brew install postgresql@17
 brew services start postgresql@17
 psql postgres
@@ -13,148 +19,203 @@ psql postgres
 ## Database Setup
 
 Create the database:
-`CREATE DATABASE blogsplitter;`
 
-Show DBs:
-`\l`
-
-Connect to the DB:
-`\c blogsplitter`
-
-Create app user:
-`CREATE USER blogsplitter_app WITH PASSWORD 'choose-a-password';`
-
-Grant the app access to the DB:
-`GRANT ALL PRIVILEGES ON DATABASE blogsplitter TO blogsplitter_app;`
-
-Let blogsplitter_app access the public schema and create tables/other objects inside it:
-`GRANT USAGE, CREATE ON SCHEMA public TO blogsplitter_app;`
-
-Check that everything was setup with:
-
+```sql
+CREATE DATABASE blogsplitter;
 ```
+
+List databases:
+
+```text
+\l
+```
+
+Connect:
+
+```text
+\c blogsplitter
+```
+
+Create the application user:
+
+```sql
+CREATE USER blogsplitter_app WITH PASSWORD 'choose-a-password';
+```
+
+Grant database access:
+
+```sql
+GRANT ALL PRIVILEGES ON DATABASE blogsplitter TO blogsplitter_app;
+```
+
+Allow access to the `public` schema:
+
+```sql
+GRANT USAGE, CREATE ON SCHEMA public TO blogsplitter_app;
+```
+
+Verify:
+
+```text
 \l
 \dn+
 \du
 ```
 
-[`README.md`](../../README.md)
+# Migrations
 
-## Migrations
+Migration files are located in:
 
-Creating the tables:
-
-`api/migrations/001_initial.sql`
-
-Run the migration: `psql "$(grep '^DATABASE_URL=' .env | cut -d '=' -f2-)" -f migrations/001_initial.sql`
-
-⚠️ Temporary step: Manually creating a user. This won't be necessary once a sign-up feature is built ⚠️
-
-Insert the first user and get their id:
-
+```text
+api/migrations/
 ```
+
+Run the initial migration from `/api`:
+
+```bash
+psql "$(grep '^DATABASE_URL=' .env | cut -d '=' -f2-)" \
+  -v ON_ERROR_STOP=1 \
+  -f migrations/001_initial.sql
+```
+
+## Seed Initial User
+
+> ⚠️ Temporary until authentication/sign-up is implemented.
+
+```sql
 INSERT INTO users (name)
 VALUES ('yourname')
 RETURNING id;
 ```
 
-## Create blogs manually
+## Create Test Blogs
 
-blog name , url-friendly slug , tags
-
-```
-INSERT INTO blogs (name, slug, required_tags)
+```sql
+INSERT INTO blogs (user_id, name, slug, required_tags)
 VALUES
-  ('3d Printing Blog', '3dprint', ARRAY['3dprint', '3dprinting']),
-  ('Motor Bikes Blog', 'moto', ARRAY['moto', 'motorcycle', 'scooter']);
+  (1, '3d Printing Blog', '3dprint', ARRAY['3dprint', '3dprinting']),
+  (1, 'Motor Bikes Blog', 'moto', ARRAY['moto', 'motorcycle', 'scooter']);
 ```
 
-Query them after adding some posts that have matching tags:
+Test matching posts:
 
-```
+```bash
 curl http://localhost:3949/blogs/3dprint/posts
 curl http://localhost:3949/blogs/moto/posts
 ```
 
-## Install PostgreSQL on Linux (Ubuntu):
+# PostgreSQL on Ubuntu / EC2
 
-`sudo apt update && sudo apt install -y postgresql-client`
+Update package information:
+
+```bash
+sudo apt update
+```
+
+Install PostgreSQL:
+
+```bash
+sudo apt install -y postgresql postgresql-client
+```
+
+If package installation fails:
+
+```bash
+sudo apt --fix-broken install
+```
 
 Verify:
-`psql --version`
 
-If it failed to install you can try:
-`sudo apt --fix-broken install`
-
-Install PostgreSQL;
-`sudo apt install -y postgresql`
-
-Set to start at system boot and start now.
-
+```bash
+psql --version
 ```
+
+Enable PostgreSQL at startup and start it now:
+
+```bash
 sudo systemctl enable postgresql
 sudo systemctl start postgresql
 ```
 
-Create user:
+## Create Application User
 
-```
+```bash
 sudo -u postgres createuser --pwprompt blogsplitter_app
 ```
 
-Enter the password here and in [`api/.env`]
-(../../api/.env) (Created from [.env.example](../../api/.env.example))
+Use the same password in:
 
-Create the database:
-`sudo -u postgres createdb -O blogsplitter_app blogsplitter`
-
-### Apply migrations
-
-001_initial.sql:
-
-! make sure to put your password instead of YOUR_PASSWORD
-
-```
-cd api
-psql "postgresql://blogsplitter_app:YOUR_PASSWORD@localhost:5432/blogsplitter" -v ON_ERROR_STOP=1 -f migrations/001_initial.sql
+```text
+api/.env
 ```
 
-Verify the tables exis:
-`psql "$DATABASE_URL" -c "\dt"`
+Create the database owned by the application user:
 
-⚠️ If you get the following eror...
-`$DATABASE_URL is not exported into your shell, so psql fell back to your Linux user ubuntu.`
-
-Run:
-
+```bash
+sudo -u postgres createdb -O blogsplitter_app blogsplitter
 ```
+
+## Loading `.env` Variables Into the Shell
+
+To make variables from `api/.env` available to shell commands for the **current session**:
+
+```bash
 set -a
 source .env
 set +a
+```
+
+- `set -a` — automatically exports variables defined afterward.
+- `source .env` — loads the variables from `.env`.
+- `set +a` — stops automatic exporting; already exported variables remain available.
+
+They remain available until that shell session ends.
+
+```bash
+psql "$DATABASE_URL"
+```
+
+# Production Migrations
+
+From `/api`, load environment variables as described above.
+
+Then verify the connection:
+
+```bash
 psql "$DATABASE_URL" -c "\dt"
 ```
 
-Run the remaining migrations (5 as of writing this)
+Run migrations in order:
 
-```
+```bash
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f migrations/001_initial.sql
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f migrations/002_blogs_and_tags.sql
-
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f migrations/003_normalize_tags.sql
-
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f migrations/004_add_post_slugs.sql
-
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f migrations/005_add_blog_user_id.sql
 ```
 
 Verify all tables:
-`psql "$DATABASE_URL" -c "\dt"`
 
-Seed user ID 1:
-`psql "$DATABASE_URL" -c "INSERT INTO users (name) VALUES ('steve') RETURNING id;"`
-
-Create 2 test blogs:
-
+```bash
+psql "$DATABASE_URL" -c "\dt"
 ```
+
+# Production Seed Data
+
+Seed the temporary user:
+
+```bash
+psql "$DATABASE_URL" -c "
+INSERT INTO users (name)
+VALUES ('yourname')
+RETURNING id;
+"
+```
+
+Create test blogs:
+
+```bash
 psql "$DATABASE_URL" -c "
 INSERT INTO blogs (user_id, name, slug, required_tags)
 VALUES

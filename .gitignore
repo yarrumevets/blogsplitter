@@ -16,3 +16,5 @@ coverage/
 .cache/
 *.tmp
 *.swp
+
+frontend/frontend-build.tar.gz

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 type Post = {
   id: number;
   title: string;
@@ -34,7 +36,9 @@ export default async function BlogPage({
       {posts.map((post) => (
         <article key={post.id}>
           <h2>
-            <a href={`/blogs/${user}/${slug}/${post.slug}`}>{post.title}</a>
+            <Link href={`/blogs/${user}/${slug}/${post.slug}`}>
+              {post.title}
+            </Link>
           </h2>
           <div dangerouslySetInnerHTML={{ __html: post.body_html }} />
           <small>{post.tags.join(", ")}</small>
